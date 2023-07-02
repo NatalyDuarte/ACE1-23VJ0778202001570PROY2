@@ -22,19 +22,30 @@ cargar_nivel  db "CARGAR NIVEL$"
 configuracion db "CONFIGURACION$"
 puntajes      db "PUNTAJES ALTOS$"
 salir         db "SALIR$"
+pausa         db "PAUSA:$"
+continuar        db "Continuar Partida$"
 ;; MENÚS
 opcion        db 0
 opcion1        db 0
+opcion2        db 0
 maximo        db 0
 xFlecha       dw 0
 yFlecha       dw 0
 ;;
+config db "CONFIGURACION:$"
 arriba db "Arriba: FLECHA ARRIBA$"
 abajo  db "Abajo: FLECHA ABAJO$"
 izquierda db "Izquierda: FLECHA IZQUIERDA$"
 derecha  db "Derecha: FLECHA DERECHA$"
+arribab db "Arriba:$"
+abajob  db "Abajo:$"
+izquierdab db "Izquierda:$"
+derechab  db "Derecha:$"
 cambiarcontroles db "Cambiar Controles$"
+puntajesal  db "PUNTAJES ALTOS:$"
 regresar db "Regresar$"
+archnoencontrado db "Archivo No Encontrado$"
+nojugador db "No Existe Ninguna Sentencia Jugador En La Entrada$"
 ;;
 dim_sprite_vacio  db   08, 08
 data_sprite_vacio db   00, 00, 00, 00, 00, 00, 00, 00
@@ -55,14 +66,14 @@ data_sprite_flcha   db   00, 00, 05, 00, 00, 00, 00, 00
                     db   00, 00, 05, 05, 00, 00, 00, 00
                     db   00, 00, 05, 00, 00, 00, 00, 00
 dim_sprite_jug    db   08, 08
-data_sprite_jug   db   5c, 5c, 5c, 04, 04, 04, 5c, 5c
-                  db   5c, 5c, 5c, 54, 54, 5c, 5c, 5c
-                  db   5c, 5c, 02, 02, 02, 02, 5c, 5c
-                  db   5c, 54, 5c, 02, 02, 5c, 54, 5c
-                  db   5c, 5c, 5c, 09, 09, 5c, 5c, 5c
-                  db   5c, 5c, 5c, 09, 09, 5c, 5c, 5c
-                  db   5c, 5c, 54, 5c, 5c, 54, 5c, 5c
-                  db   5c, 00, 00, 5c, 5c, 00, 00, 5c
+data_sprite_jug   db 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh
+                  db 5Eh, 5Eh, 5Eh, 78h, 78h, 5Eh, 5Eh, 5Eh
+                  db 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh
+                  db 5Eh, 78h, 5Eh, 5Eh, 5Eh, 5Eh, 78h, 5Eh
+                  db 5Eh, 5Eh, 7Eh, 5Eh, 5Eh, 7Eh, 5Eh, 5Eh
+                  db 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh, 5Eh
+                  db 5Eh, 5Eh, 7Eh, 5Eh, 5Eh, 7Eh, 5Eh, 5Eh
+                  db 5Eh, 00h, 00h, 5Eh, 5Eh, 00h, 00h, 5Eh
 dim_sprite_suelo  db   08, 08
 data_sprite_suelo db   5c, 5c, 5c, 5c, 5c, 5c, 5c, 5c
                   db   5c, 5c, 5c, 5c, 5c, 5c, 5c, 5c
@@ -73,32 +84,34 @@ data_sprite_suelo db   5c, 5c, 5c, 5c, 5c, 5c, 5c, 5c
                   db   5c, 5c, 5c, 5c, 5c, 5c, 5c, 5c
                   db   5c, 5c, 5c, 5c, 5c, 5c, 5c, 5c
 dim_sprite_pared  db   08, 08
-data_sprite_pared db   35, 35, 0f, 0f, 35, 35, 0f, 0f
-                  db   35, 0f, 0f, 35, 35, 0f, 0f, 35
-                  db   0f, 0f, 35, 35, 0f, 0f, 35, 35
-                  db   0f, 35, 35, 0f, 0f, 35, 35, 0f
-                  db   35, 35, 0f, 0f, 35, 35, 0f, 0f
-                  db   35, 0f, 0f, 35, 35, 0f, 0f, 35
-                  db   0f, 0f, 35, 35, 0f, 0f, 35, 35
-                  db   0f, 35, 35, 0f, 0f, 35, 35, 0f
+data_sprite_pared db   18, 18, 0f, 0f, 18, 18, 0f, 0f
+                  db   18, 0f, 0f, 18, 18, 0f, 0f, 18
+                  db   0f, 0f, 18, 18, 0f, 0f, 18, 18
+                  db   0f, 18, 18, 0f, 0f, 18, 18, 0f
+                  db   18, 18, 0f, 0f, 18, 18, 0f, 0f
+                  db   18, 0f, 0f, 18, 18, 0f, 0f, 18
+                  db   0f, 0f, 18, 18, 0f, 0f, 18, 18
+                  db   0f, 18, 18, 0f, 0f, 18, 18, 0f
 dim_sprite_caja   db   08, 08
-data_sprite_caja  db  5c,5c,5c,5c,5c,5c,5c,5c
-                  db  5c,5c,0b8,0b8,0b8,0b8,5c,5c
-                  db  5c,0b8,8a,8a,8a,8a,0b8,5c
-                  db  5c,0b8,8a,8a,8a,8a,0b8,5c
-                  db  5c,0b8,8a,8a,8a,8a,0b8,5c
-                  db  5c,0b8,8a,8a,8a,8a,0b8,5c
-                  db  5c,5c,0b8,0b8,0b8,0b8,5c,5c
-                  db  5c,5c,5c,5c,5c,5c,5c,5c
+data_sprite_caja  db  20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h
+                  db  20h, 2Fh, 95h, 5Fh, 5Fh, 95h, 2Fh, 20h
+                  db  20h, 95h, 20h, 7Ch, 7Ch, 20h, 95h, 20h
+                  db  20h, 95h, 7Ch, 20h, 20h, 7Ch, 95h, 20h
+                  db  20h, 95h, 7Ch, 20h, 20h, 7Ch, 95h, 20h
+                  db  20h, 95h, 20h, 7Ch, 7Ch, 20h, 95h, 20h
+                  db  20h, 2Fh, 95h, 5Fh, 5Fh, 95h, 2Fh, 20h
+                  db  20h, 20h, 20h, 20h, 20h, 20h, 20h, 20h
 dim_sprite_obj    db   08, 08
-data_sprite_obj   db  5c,5c,5c,5c,5c,5c,5c,5c
-                  db  5c,28,5c,5c,5c,5c,28,5c
-                  db  5c,5c,28,5c,5c,28,5c,5c
-                  db  5c,5c,5c,28,28,5c,5c,5c
-                  db  5c,5c,5c,28,28,5c,5c,5c
-                  db  5c,5c,28,5c,5c,28,5c,5c
-                  db  5c,28,5c,5c,5c,5c,28,5c
-                  db  5c,5c,5c,5c,5c,5c,5c,5c
+data_sprite_obj   db  20,20,20,20,20,20,20,20
+                  db  20,20,5c,20,20,5c,20,20
+                  db  20,5c,5c,5c,5c,5c,5c,20
+                  db  20,5c,5c,5c,5c,5c,5c,20
+                  db  20,20,5c,5c,5c,5c,20,20
+                  db  20,20,20,5c,5c,20,20,20
+                  db  20,20,20,20,20,20,20,20
+                  db  20,20,20,20,20,20,20,20
+
+
 ;;
 mapa              db   3e8 dup (0)
 ;; CONTROLES
@@ -106,9 +119,16 @@ control_arriba    db  48
 control_abajo     db  50
 control_izquierda db  4b
 control_derecha   db  4d
+control_pausa     db  39
 ;; NIVELES
 nivel_x           db  "NIV.TXT",00
 handle_nivel      dw  0000
+nivel_1           db  "NIV.00",00
+handle_nivel1     dw  0000
+nivel_2           db  "NIV.01",00
+handle_nivel2     dw  0000
+nivel_3           db  "NIV.10",00
+handle_nivel3     dw  0000
 linea             db  100 dup (0)
 elemento_actual   db  0
 xElemento         db  0
@@ -122,6 +142,10 @@ tk_objetivo   db  08,"objetivo"
 tk_coma       db  01,","
 ;;
 numero        db  5 dup (30)
+;; JUEGO
+xJugador      db 0
+yJugador      db 0
+puntos        dw 0
 .CODE
 .STARTUP
 inicio:
@@ -200,18 +224,38 @@ inicio:
 		call menu_principal
 		mov AL, [opcion]
 		;; > INICIAR JUEGO
+		cmp AL, 0
+		je ciclo_juego
 		;; > CARGAR NIVEL
 		cmp AL, 1
 		je cargar_un_nivel
 		;; > CONFIGURACION
-		cmp AL, 1
+		cmp AL, 2
 		je menu_configuracion
 		;;;;
 		;; > PUNTAJES ALTOS
+		cmp AL, 3
+		je menu_puntajes
 		;; > SALIR
 		cmp AL, 4
 		je fin
-
+menu_puntajes:
+		call clear_pantalla
+		;; IMPRIMIR OPCIONES ;;
+		;;;; INICIAR JUEGO
+		mov DL, 0c
+		mov DH, 05
+		mov BH, 00
+		mov AH, 02
+		int 10
+		;; <<-- posicionar el cursor
+		push DX
+		mov DX, offset puntajesal
+		mov AH, 09
+		int 21
+		pop DX
+		call delay
+		jmp inicio
 
 menu_configuracion:
 		call clear_pantalla
@@ -223,6 +267,17 @@ menu_configuracion:
 		mov AH, 02
 		int 10
 		;; <<-- posicionar el cursor
+		push DX
+		mov DX, offset config
+		mov AH, 09
+		int 21
+		pop DX
+		;;
+		;;;; CARGAR NIVEL
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
 		push DX
 		mov DX, offset derecha
 		mov AH, 09
@@ -310,7 +365,7 @@ entrada_menu_confi:
 		je restar_opcion_menu_confi
 		cmp AH, 50
 		je sumar_opcion_menu_confi
-		cmp AH, 1c  ;; le doy F1
+		cmp AH, 1c  ;; le doy enter
 		je fin_menu_confi
 		jmp entrada_menu_confi
 restar_opcion_menu_confi:
@@ -359,6 +414,12 @@ pintar_flecha_menu_confi:
 		jmp entrada_menu_confi
 		;;
 fin_menu_confi:
+		mov AL, [opcion1]
+		;; > INICIAR JUEGO
+		;; > Configurar
+		
+		;; > Retornar
+		cmp AL, 1
 		ret
 menu_principal:
 		call clear_pantalla
@@ -744,7 +805,7 @@ cargar_un_nivel:
 		mov DX, offset nivel_x
 		mov AH, 3d
 		int 21
-		jc inicio
+		jc archno
 		mov [handle_nivel], AX
 		;;
 ciclo_lineas:
@@ -788,6 +849,7 @@ ciclo_lineas:
 		call cadena_igual
 		cmp DL, 0ff               ;; cadenas iguales
 		je es_jugador
+		;;jne nosejugador
 		pop DI
 		jmp ciclo_lineas
 es_pared:
@@ -932,6 +994,7 @@ cadenas_son_iguales:
 fin_cadena_igual:
 		mov DL, 00
 		ret
+
 ;; ignorar_espacios - ignora una sucesión de espacios
 ;; ENTRADA:
 ;;    - DI: offset de una cadena cuyo primer byte se supone es un espacio
@@ -1017,6 +1080,262 @@ seguir_convirtiendo:
 		loop seguir_convirtiendo
 retorno_cadenaAnum:
 		ret
+ciclo_juego:
+		call pintar_mapa
+		call entrada_juego
+		jmp ciclo_juego
+		;;;;;;;;;;;;;;;;
+entrada_juego:
+		mov AH, 01
+		int 16
+		jz fin_entrada_juego  ;; nada en el buffer de entrada
+		mov AH, 00
+		int 16
+		;; AH <- scan code
+		cmp AH, [control_arriba]
+		je mover_jugador_arr
+		cmp AH, [control_abajo]
+		je mover_jugador_aba
+		cmp AH, [control_izquierda]
+		je mover_jugador_izq
+		cmp AH, [control_derecha]
+		je mover_jugador_der
+		cmp AH, [control_pausa]
+		je pausamenu
+		cmp AH, 3c
+		ret
+pausamenu:
+	call clear_pantalla
+	;;;; IMPRIMIR ENCABEZADO
+	mov DL, 0c
+	mov DH, 05
+	mov BH, 00
+	mov AH, 02
+	int 10
+	;; <<-- posicionar el cursor
+	push DX
+	mov DX, offset pausa
+	mov AH, 09
+	int 21
+	pop DX
+	call menu_pausa
+	mov DL,[opcion2]
+	cmp DL,1
+	je ciclo_juego
+	cmp DL,2
+	je inicio
+menu_pausa:
+	mov AL, 0
+	mov [opcion2], AL      ;; reinicio de la variable de salida
+	mov AL, 3
+	mov [maximo], AL
+	mov AX, 50
+	mov BX, 28
+	mov [xFlecha], AX
+	mov [yFlecha], BX 
+	add DH, 02
+	mov BH, 00
+	mov AH, 02
+	int 10
+	push DX
+	mov DX, offset continuar
+	mov AH, 09
+	int 21
+	pop DX
+	;;
+	add DH, 02
+	mov BH, 00
+	mov AH, 02
+	int 10
+	push DX
+	mov DX, offset regresar
+	mov AH, 09
+	int 21
+	pop DX
+	call pintar_flecha
+entrada_menu_pausa:
+		mov AH, 00
+		int 16
+		cmp AH, 48
+		je restar_opcion_menu_pausa
+		cmp AH, 50
+		je sumar_opcion_menu_pausa
+		cmp AH, 1c  ;; le doy F1
+		je fin_menu_pausa
+		jmp entrada_menu_pausa
+restar_opcion_menu_pausa:
+		mov AL, [opcion2]
+		dec AL
+		cmp AL, 0ff
+		je volver_a_cerop
+		mov [opcion2], AL
+		jmp mover_flecha_menu_pausa
+sumar_opcion_menu_pausa:
+		mov AL, [opcion2]
+		mov AH, [maximo]
+		inc AL
+		cmp AL, AH
+		je volver_a_maximop
+		mov [opcion2], AL
+		jmp mover_flecha_menu_pausa
+volver_a_cerop:
+		mov AL, 0
+		mov [opcion2], AL
+		jmp mover_flecha_menu_pausa
+volver_a_maximop:
+		mov AL, [maximo]
+		dec AL
+		mov [opcion2], AL
+		jmp mover_flecha_menu_pausa
+mover_flecha_menu_pausa:
+		mov AX, [xFlecha]
+		mov BX, [yFlecha]
+		mov SI, offset dim_sprite_vacio
+		mov DI, offset data_sprite_vacio
+		call pintar_sprite
+		mov AX, 50
+		mov BX, 28
+		mov CL, [opcion2]
+ciclo_ubicar_flecha_menu_pausa:
+		cmp CL, 0
+		je pintar_flecha_menu_pausa
+		dec CL
+		add BX, 10
+		jmp ciclo_ubicar_flecha_menu_pausa
+pintar_flecha_menu_pausa:
+		mov [xFlecha], AX
+		mov [yFlecha], BX
+		call pintar_flecha
+		jmp entrada_menu_pausa
+		;;
+fin_menu_pausa:
+		ret
+mover_jugador_arr:
+		mov AH, [xJugador]
+		mov AL, [yJugador]
+		dec AL
+		push AX
+		call obtener_de_mapa
+		pop AX
+		;; DL <- elemento en mapa
+		cmp DL, PARED
+		je hay_pared_arriba
+		mov [yJugador], AL
+		;;
+		mov DL, JUGADOR
+		push AX
+		call colocar_en_mapa
+		pop AX
+		;;
+		mov DL, SUELO
+		inc AL
+		call colocar_en_mapa
+		ret
+hay_pared_arriba:
+		ret
+mover_jugador_aba:
+		mov AH, [xJugador]
+		mov AL, [yJugador]
+		inc AL
+		push AX
+		call obtener_de_mapa
+		pop AX
+		;; DL <- elemento en mapa
+		cmp DL, PARED
+		je hay_pared_abajo
+		mov [yJugador], AL
+		;;
+		mov DL, JUGADOR
+		push AX
+		call colocar_en_mapa
+		pop AX
+		;;
+		mov DL, SUELO
+		dec AL
+		call colocar_en_mapa
+		ret
+hay_pared_abajo:
+		ret
+mover_jugador_izq:
+		mov AH, [xJugador]
+		mov AL, [yJugador]
+		dec AH
+		push AX
+		call obtener_de_mapa
+		pop AX
+		;; DL <- elemento en mapa
+		cmp DL, PARED
+		je hay_pared_izquierda
+		mov [xJugador], AH
+		;;
+		mov DL, JUGADOR
+		push AX
+		call colocar_en_mapa
+		pop AX
+		;;
+		mov DL, SUELO
+		inc AH
+		call colocar_en_mapa
+		ret
+hay_pared_izquierda:
+		ret
+mover_jugador_der:
+		mov AH, [xJugador]
+		mov AL, [yJugador]
+		inc AH
+		push AX
+		call obtener_de_mapa
+		pop AX
+		;; DL <- elemento en mapa
+		cmp DL, PARED
+		je hay_pared_derecha
+		mov [xJugador], AH
+		;;
+		mov DL, JUGADOR
+		push AX
+		call colocar_en_mapa
+		pop AX
+		;;
+		mov DL, SUELO
+		dec AH
+		call colocar_en_mapa
+		ret
+hay_pared_derecha:
+		ret
+fin_entrada_juego:
+		ret
+archno:
+		call clear_pantalla
+		;;;; IMPRIMIR ENCABEZADO
+		mov DL, 0c
+		mov DH, 05
+		mov BH, 00
+		mov AH, 02
+		int 10
+		;; <<-- posicionar el cursor
+		push DX
+		mov DX, offset archnoencontrado
+		mov AH, 09
+		int 21
+		pop DX
+		call delay
+		jmp inicio
+nosejugador:
+		call clear_pantalla
+		;;;; IMPRIMIR ENCABEZADO
+		mov DL, 0c
+		mov DH, 05
+		mov BH, 00
+		mov AH, 02
+		int 10
+		;; <<-- posicionar el cursor
+		push DX
+		mov DX, offset nojugador
+		mov AH, 09
+		int 21
+		pop DX
+		call delay
+		jmp inicio
 fin:
 .EXIT
 END
