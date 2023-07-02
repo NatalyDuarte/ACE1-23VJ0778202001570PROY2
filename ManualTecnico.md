@@ -158,31 +158,99 @@ yJugador      db 0
 puntos        dw 0
 ```
 ## Inicio
-En esta parte se encuentran el encabezado del programa, y se llama a la funcion de validar acceso.
+En esta parte se encuentran el encabezado del programa y validacion de las opciones del menu principal.
 ```
 inicio:
-		;; ENCABEZADO
+		;; MODO VIDEO ;;
+		mov AH, 00
+		mov AL, 13
+		int 10
+		call clear_pantalla
+		;;;; IMPRIMIR ENCABEZADO
+		mov DL, 0c
+		mov DH, 05
+		mov BH, 00
+		mov AH, 02
+		int 10
+		;; <<-- posicionar el cursor
+		push DX
 		mov DX, offset usac
 		mov AH, 09
 		int 21
+		pop DX
+		;;
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
 		mov DX, offset facultad
 		mov AH, 09
 		int 21
+		pop DX
+		;;
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
 		mov DX, offset escuela
 		mov AH, 09
 		int 21
+		pop DX
+		;;
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
 		mov DX, offset curso
 		mov AH, 09
 		int 21
+		pop DX
+		;;
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
 		mov DX, offset nombre
 		mov AH, 09
 		int 21
+		pop DX
+        ;;
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
 		mov DX, offset carne
 		mov AH, 09
 		int 21
-		;; acceso
-		call validar_acceso
-		int 03
+		pop DX
+        ;;
+		pop DX
+		;;
+		call delay
+		;;;;;;;;;;;;;;;;
+		call menu_principal
+		mov AL, [opcion]
+		;; > INICIAR JUEGO
+		cmp AL, 0
+		je cargar_un_nivel1
+		;; > CARGAR NIVEL
+		cmp AL, 1
+		je cargar_un_nivel
+		;; > CONFIGURACION
+		cmp AL, 2
+		je menu_configuracion
+		;;;;
+		;; > PUNTAJES ALTOS
+		cmp AL, 3
+		je menu_puntajes
+		;; > SALIR
+		cmp AL, 4
+		je fin
 ```
 ## Validar acceso
 En esta parte se verifica que este el archivo de acceso, se verifican si las credenciales son correctas y si no es asi o no se encuentra el archivo se cierra automaticamente el programa. Se utilizan diferentes metodos como:
@@ -195,263 +263,164 @@ verificar_cadena_credenciales:
 entre otros
 ```
 ## Menu_principal.
-Si las credenciales son correctas entonces se ingresa al menu principal, el cual imprime el menu y compara la respuesta del usuario para ingresar a los diferentes menus.
+Se ingresa al menu principal, el cual imprime el menu y compara en que posicion esta la flecha para ver que eligio el usuario.
 ```
 menu_principal:
-		mov DX, offset nueva_lin
+		call clear_pantalla
+		mov AL, 0
+		mov [opcion], AL      ;; reinicio de la variable de salida
+		mov AL, 5
+		mov [maximo], AL
+		mov AX, 50
+		mov BX, 28
+		mov [xFlecha], AX
+		mov [yFlecha], BX
+		;; IMPRIMIR OPCIONES ;;
+		;;;; INICIAR JUEGO
+		mov DL, 0c
+		mov DH, 05
+		mov BH, 00
+		mov AH, 02
+		int 10
+		;; <<-- posicionar el cursor
+		push DX
+		mov DX, offset iniciar_juego
 		mov AH, 09
 		int 21
-		mov DX, offset ventas
-		mov AH, 09
-		int 21
-		mov DX, offset productosm
-		mov AH, 09
-		int 21
-		mov DX, offset herramientas
-		mov AH, 09
-		int 21
-		mov AH, 08
-		int 21
+		pop DX
 		;;
-		mov ah, 01h  ; lee un carácter
-    	int 21h
-    	sub al, 30h  ; convierte el carácter a número
-    	mov numerop, al  ; almacena el número en la variable
-		; Compara el número con 1
-    	mov al, numerop
-    	cmp al, 1
-    	je menu_ventas; salta si es igual a 1
-		; Compara el número con 2
-    	mov al, numerop
-    	cmp al, 2
-    	je menu_productos; salta si es igual a 1
-		; Compara el número con 3
-    	mov al, numerop
-    	cmp al, 3
-    	je menu_herramientas; salta si es igual a 1
-```
-## Menu_productos
-Al seleccionar la opcion 2 nos dirige a esta parte en la cual imprime otro menu y espera respuesta del usuario para dirigir a lo siguiente.
-```
-		mov DX, offset nueva_lin
+		;;;; CARGAR NIVEL
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset cargar_nivel
 		mov AH, 09
 		int 21
-		mov DX, offset mostrar_prod
+		pop DX
+		;;;; CONFIGURACION
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset configuracion
 		mov AH, 09
 		int 21
-		mov DX, offset ingresar_prod
-		mov AH, 09
-		int 21
-		mov DX, offset borrar_prod
-		mov AH, 09
-		int 21
-		mov AH, 08
-		int 21
+		pop DX
 		;;
-		mov ah, 01h  ; lee un carácter
-    	int 21h
-    	sub al, 30h  ; convierte el carácter a número
-    	mov numero, al  ; almacena el número en la variable
-		; Compara el número con 1
-    	mov al, numero
-    	cmp al, 1
-    	je mostrar_productos_archivo; salta si es igual a 1
-		; Compara el número con 2
-    	mov al, numero
-    	cmp al, 2
-    	je ingresar_producto_archivo; salta si es igual a 1
-		; Compara el número con 3
-    	mov al, numero
-    	cmp al, 3
-    	je eliminar_producto_archivo; salta si es igual a 1
+		;;
+		;;;; PUNTAJES ALTOS
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset puntajes
+		mov AH, 09
+		int 21
+		pop DX
+		;;
+		;;;; SALIR
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset salir
+		mov AH, 09
+		int 21
+		pop DX
+		;;;;
+		call pintar_flecha
 ```
-Al obtener respuesta del usuario envia a diferentes metodos entre los cuales algunos son:
+## Menu_puntajes
+Se ingresa al menu puntajes, muestra un tiempo los puntajes y regresa al menu principal.
 ```
-ciclo_mostrar_rep1:
-escribir_desc:
-cerrar_tags:
-mostrar_productos_archivo:
-ciclo_convertirAcadena:
-retorno_convertirAcadena:
-ingresar_producto_archivo:
-eliminar_producto_archivo:
-ciclo_cadenas_iguales:
+menu_puntajes:
+		call clear_pantalla
+		;; IMPRIMIR OPCIONES ;;
+		;;;; INICIAR JUEGO
+		mov DL, 0c
+		mov DH, 05
+		mov BH, 00
+		mov AH, 02
+		int 10
+		;; <<-- posicionar el cursor
+		push DX
+		mov DX, offset puntajesal
+		mov AH, 09
+		int 21
+		pop DX
+		call delay
+		jmp inicio
 ```
-## Menu_ventas:
-Al seleccionar la opcion 1 nos dirige a esta parte en la cual imprime el ingreso de datos para la compra, verifica si exite ese producto y se hace la compra, restando los productos que se vendieron.
+## Menu_configuracion
+Se ingresa al menu configuracion, muestra de que manera esta configurado el movimiento del personaje y dara la opcion de cambairlo o regresar al menu principal.
 ```
-menu_ventas:
-	ingresar_venta_archivo:
-			mov DX, offset titulo_ventas
-			mov AH, 09
-			int 21
-			mov DX, offset sub_prod
-			mov AH, 09
-			int 21
-			mov DX, offset nueva_lin
-			mov AH, 09
-			int 21
-			;;; PEDIR CODIGO
-	pedir_de_nuevo_codigov:
-			mov DX, offset elegiv_code
-			mov AH, 09
-			int 21
-			mov DX, offset buffer_entrada
-			mov AH, 0a
-			int 21
-			;;; verificar que el tamaño del codigo no sea mayor a 5
-			mov DI, offset buffer_entrada
-			inc DI
-			mov AL, [DI]
-			cmp AL, 00
-			je  pedir_de_nuevo_codigov
-			cmp AL, 05
-			jb  aceptar_tam_codv  ;; jb --> jump if below
-			mov DX, offset nueva_lin
-			mov AH, 09
-			int 21
-			jmp pedir_de_nuevo_codigov
-			;;; mover al campo codigo en la estructura producto
-	aceptar_tam_codv:
-			mov SI, offset cod_prodv
-			mov DI, offset buffer_entrada
-			inc DI
-			mov CH, 00
-			mov CL, [DI]
-			inc DI  ;; me posiciono en el contenido del buffer
-	copiar_codigov:	mov AL, [DI]
-			mov [SI], AL
-			inc SI
-			inc DI
-			loop copiar_codigov  ;; restarle 1 a CX, verificar que CX no sea 0, si no es 0 va a la etiqueta, 
-			;;; la cadena ingresada en la estructura
-			;;;
-			mov DX, offset nueva_lin
-			mov AH, 09
-			int 21
-	pedir_de_nuevo_unidadesv:
-			mov DX, offset elegiv_units
-			mov AH, 09
-			int 21
-			mov DX, offset buffer_entrada
-			mov AH, 0a
-			int 21
-			;;; verificar que el tamaño del codigo no sea mayor a 5
-			mov DI, offset buffer_entrada
-			inc DI
-			mov AL, [DI]
-			cmp AL, 00
-			je  pedir_de_nuevo_unidadesv
-			cmp AL, 20
-			jb  aceptar_tam_unidadesv
-			mov DX, offset nueva_lin
-			mov AH, 09
-			int 21
-			jmp pedir_de_nuevo_unidadesv
-			;;; mover al campo codigo en la estructura producto
-	aceptar_tam_unidadesv:
-			mov SI, offset cod_unidadesv
-			mov DI, offset buffer_entrada
-			inc DI
-			mov CH, 00
-			mov CL, [DI]
-			inc DI  ;; me posiciono en el contenido del buffer
-	copiar_unidadesv:	mov AL, [DI]
-			mov [SI], AL
-			inc SI
-			inc DI
-			loop copiar_unidadesv  ;; restarle 1 a CX, verificar que CX no sea 0, si no es 0 va a la etiqueta, 
-			;;; la cadena ingresada en la estructura
-			;;;
-			mov DX, offset nueva_lin
-			mov AH, 09
-			int 21
-			;; finalizó pedir datos de producto
-			;;
-			;;
-			;;
-			;;
-			;; GUARDAR EN ARCHIVO
-			;; probar abrirlo normal
-			mov AL, 02
-			mov AH, 3d
-			mov DX, offset archivo_ventas
-			int 21
-			;; si no lo cremos
-			jc  crear_archivo_ventas
-			;; si abre escribimos
-			jmp guardar_handle_ventas
-	crear_archivo_ventas:
-			mov CX, 0000
-			mov DX, offset archivo_ventas
-			mov AH, 3c
-			int 21
-			;; archivo abierto
-	guardar_handle_ventas:
-			;; guardamos handle
-			mov [handle_ventas], AX
-			;; obtener handle
-			mov BX, [handle_ventas]
-			;; vamos al final del archivo
-			mov CX, 00
-			mov DX, 00
-			mov AL, 02
-			mov AH, 42
-			int 21
-			;; escribir el producto en el archivo
-			;; escribí los dos primeros campos
-			mov CX, 26
-			mov DX, offset cod_prodv
-			mov AH, 40
-			int 21
-			;; escribo los otros dos
-			mov CX, 0004
-			mov DX, offset cod_unidadesv
-			mov AH, 40
-			int 21
-			;; cerrar archivo
-			mov AH, 3e
-			int 21
-			;;
-			jmp menu_principal
+menu_configuracion:
+		call clear_pantalla
+		;; IMPRIMIR OPCIONES ;;
+		;;;; INICIAR JUEGO
+		mov DL, 0c
+		mov DH, 05
+		mov BH, 00
+		mov AH, 02
+		int 10
+		;; <<-- posicionar el cursor
+		push DX
+		mov DX, offset config
+		mov AH, 09
+		int 21
+		pop DX
+		;;
+		;;;; CARGAR NIVEL
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset derecha
+		mov AH, 09
+		int 21
+		pop DX
+		;;
+		;;;; CARGAR NIVEL
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset abajo
+		mov AH, 09
+		int 21
+		pop DX
+		;;
+		;;;; PUNTAJES ALTOS
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset arriba
+		mov AH, 09
+		int 21
+		pop DX
+		;;
+		;;;; CONFIGURACION
+		add DH, 02
+		mov BH, 00
+		mov AH, 02
+		int 10
+		push DX
+		mov DX, offset izquierda
+		mov AH, 09
+		int 21
+		pop DX
+		;;
+		call delay;;
 ```
-## Menu_herramientas:
-Al seleccionar la opcion 3 nos dirige a esta parte en la cual imprime el menu de reportes.
-```
-menu_herramientas:
-	mov DX, offset nueva_lin
-	mov AH, 09
-	int 21
-	mov DX, offset repocatalogo
-	mov AH, 09
-	int 21
-	mov DX, offset repoalfaproduc
-	mov AH, 09
-	int 21
-	mov DX, offset repoventas
-	mov AH, 09
-	int 21
-	mov DX, offset repoprodusin
-	mov AH, 09
-	int 21
-	mov AH, 08
-	int 21
-	;;
-	mov ah, 01h  ; lee un carácter
-	int 21h
-	sub al, 30h  ; convierte el carácter a número
-	mov numero, al  ; almacena el número en la variable
-	; Compara el número con 1
-	mov al, numero
-	cmp al, 1
-	je generar_catalogo; salta si es igual a 1
-	; Compara el número con 2
-```
-Al obtener respuesta del usuario envia a diferentes metodos entre los cuales algunos son:
-```
-generar_catalogo:
-ciclo_mostrar_rep1:
-fin_mostrar_rep1:
-imprimir_estructura_html:
-ciclo_escribir_codigo:
-```
+## Funciones para pintar mapa de juego y movimiento
+Se observan diferentes funciones para ver, crear y leer archivos para la creacion del mapa del juego.
+![image](https://github.com/NatalyDuarte/ACE1-23VJ0778202001570PROY2/assets/82484670/967f45a0-ccd6-4d87-a6f6-f6fddab243d2)
